@@ -1,8 +1,8 @@
 {
   "name": "php-group-imports",
   "displayName": "PHP Group Imports",
-  "description": "To merge same namespace imports to ingle import statement",
-  "version": "0.1.0",
+  "description": "To merge same namespace imports to single import statement",
+  "version": "0.1.1",
   "publisher": "MRazinShaikh",
   "repository": {
     "type": "git",

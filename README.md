@@ -1,6 +1,6 @@
 # PHP Group imports
 
-Command Pallet`PHP Group Imports`
+Command Pallet > `PHP Group Imports`
 
 ## Requirements
 
