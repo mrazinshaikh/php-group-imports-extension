@@ -30,10 +30,13 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
+		// TODO: Separate active and commented import lines
+
 		const organizedImports = organizeImports(importLines);
 		const newText = text.replace(/^(use [^;]+;\n)+/gm, organizedImports.join("\n") + "\n");
 
 		editor.edit(editBuilder => {
+			// TODO: instead of whole file re-write, only replace imports for performance.
 			const entireRange = new vscode.Range(
 				editor.document.positionAt(0),
 				editor.document.positionAt(text.length)
@@ -44,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	function organizeImports(importLines: string[]) {
 		type ImportGroupsType = {
-			[key: string]: Array<any>;
+			[key: string]: Set<string>;
 		};
 
 		const importGroups: ImportGroupsType = {};
@@ -54,17 +57,39 @@ export function activate(context: vscode.ExtensionContext) {
 			path = path ? path[1] : '';
 			const [base, ...rest] = path.split('\\').reverse();
 			const namespace: string = rest.reverse().join('\\');
-			if (!importGroups[namespace]) {
-				importGroups[namespace] = [];
+
+			if (!base) {
+				// Skip if base is undefined or an empty string
+				return;
 			}
-			importGroups[namespace].push(base);
+			
+			if (!importGroups[namespace]) {
+				importGroups[namespace] = new Set();
+			}
+			importGroups[namespace].add(base);
 		});
 
-		return Object.entries(importGroups).map(([namespace, bases]) => {
+		return Object.entries(importGroups).map(([namespace, basesSet]) => {
+
+			let bases = Array.from(basesSet); // Convert Set to Array for sorting or further manipulation
+			// Check and split if one of the bases is already a grouped import
+			bases = bases.reduce((acc: Array<string>, base) => {
+				if (base.startsWith('{') && base.endsWith('}')) {
+					// Split the grouped base and add individual parts
+					const splitBases = base.slice(1, -1).split(', ');
+					acc.push(...splitBases);
+				} else {
+					acc.push(base);
+				}
+				return acc;
+			}, []);
+
+			// TODO: sort imports by length before grouping
+	
 			if (bases.length === 1) {
 				return `use ${namespace}\\${bases[0]};`;
 			} else {
-				return `use ${namespace}\\{${bases.join(', ')}};`;
+				return `use ${namespace}\\{${bases.sort().join(', ')}};`;
 			}
 		});
 	}
