@@ -10,6 +10,37 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "php-short-imports" is now active!');
 
+	function findUseStatementBlocks(text: string) {
+		const pattern = /^(use [^;]+;\n)+/gm;
+		let match;
+		
+		let firstBlockStart = -1;
+		let firstBlockEnd = -1;
+		let lastBlockStart = -1;
+		let lastBlockEnd = -1;
+	  
+		while ((match = pattern.exec(text)) !== null) {
+		  // Count newlines to determine the current block's start line
+		  const blockStartLine = (text.substring(0, match.index).match(/\n/g) || []).length + 1;
+		  const blockEndLine = blockStartLine + (match[0].match(/\n/g) || []).length - 1;
+	  
+		  // Update first and last block positions
+		  if (firstBlockStart === -1) {
+			firstBlockStart = blockStartLine;
+			firstBlockEnd = blockEndLine;
+		  }
+		  
+		  // Always update last block positions to the current match
+		  lastBlockStart = blockStartLine;
+		  lastBlockEnd = blockEndLine;
+		}
+	  
+		return {
+		  firstBlockStart,
+		  firstBlockEnd
+		};
+	  }
+
 	function optimizeImports() {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
@@ -24,7 +55,29 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const text = editor.document.getText();
-		const importLines = text.match(/^use [^;]+;/gm);
+		// const importLines = text.match(/^use [^;]+;/gm);
+
+		const importRegex = /^use [^;]+;/gm;
+		let match;
+		let importLines = [];
+		let startOffset = Number.MAX_VALUE;
+		let endOffset = 0;
+
+		// Identify the range and collect import lines
+		while ((match = importRegex.exec(text)) !== null) {
+			importLines.push(match[0]);
+			startOffset = Math.min(startOffset, match.index);
+			endOffset = Math.max(endOffset, match.index + match[0].length);
+		}
+
+		// If no imports are found, no need to proceed
+		if (startOffset === activeDocument?.getText().length) {
+			return;
+		}
+
+		console.log('Match Check');
+		console.log({startOffset, endOffset});
+
 		if (!importLines) {
 			vscode.window.showInformationMessage('No imports found');
 			return;
@@ -34,6 +87,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const organizedImports = organizeImports(importLines);
 		const newText = text.replace(/^(use [^;]+;\n)+/gm, organizedImports.join("\n") + "\n");
+		console.log(newText);
+		const {firstBlockStart, firstBlockEnd} = findUseStatementBlocks(text);
+		// console.log({
+		// 	docStart: editor.document.positionAt(startOffset),
+		// 	docEnd: editor.document.positionAt(endOffset)
+		// });
+		
 
 		editor.edit(editBuilder => {
 			// TODO: instead of whole file re-write, only replace imports for performance.
@@ -98,7 +158,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('php-short-imports.groupImports', async () => {
+	let disposable = vscode.commands.registerCommand('php-group-imports.groupImports', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		optimizeImports();
