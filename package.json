@@ -2,12 +2,13 @@
   "name": "php-group-imports",
   "displayName": "PHP Group Imports",
   "description": "To merge same namespace imports to single import statement",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "MRazinShaikh",
   "repository": {
     "type": "git",
     "url": "https://github.com/mrazinshaikh/php-group-imports-extension.git"
   },
+  "icon": "images/php-group-imports.png",
   "engines": {
     "vscode": "^1.87.0"
   },
