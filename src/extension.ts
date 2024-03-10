@@ -8,7 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "php-short-imports" is now active!');
+	console.log('Congratulations, your extension "php-group-imports" is now active!');
 
 	function optimizeImports() {
 		const editor = vscode.window.activeTextEditor;
@@ -24,16 +24,43 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const text = editor.document.getText();
-		const importLines = text.match(/^use [^;]+;/gm);
+		const importLines = text.match(/^((\#(.*))|((\/\/(\s+)?)|((\/(\*+))(\s+)?))?use [^;]+;)?(.*\*\/.*$)?/gm);
+		// const importLines = text.match(/^((\/\*\*?[^*]*\*+(?:[^\/*][^*]*\*+)*\/\s*)?use [^;]+;\s*)|(\/\/\s*use [^;]+;\s*)$/gm);
 		if (!importLines) {
 			vscode.window.showInformationMessage('No imports found');
 			return;
 		}
 
-		// TODO: Separate active and commented import lines
+		const organizedImports = organizeImports(importLines.filter(n => n));
+		const organizedImportString = organizedImports.join("\n");
 
-		const organizedImports = organizeImports(importLines);
-		const newText = text.replace(/^(use [^;]+;\n)+/gm, organizedImports.join("\n") + "\n");
+		// Split text into lines
+		let lines = text.split("\n");
+
+		/**
+		 * Find the block of import statements
+		 * 
+		 * A line-by-line processing approach, while seemingly more verbose,
+		 * often gives us more control and clarity,
+		 * especially when dealing with nuanced patterns like comments among import statements.
+		 */
+		let start = -1, end = -1;
+		for (let i = 0; i < lines.length; i++) {
+				// if (lines[i].match(/^(\/\/(\s+)?)?use [^;]+;$/)) {
+				if (lines[i].match(/^((\/\*\*?[^*]*\*+(?:[^\/*][^*]*\*+)*\/\s*)?use [^;]+;\s*)|(\/\/\s*use [^;]+;\s*)$/g)) {
+				if (start === -1) {start = i;}
+				end = i;
+			}
+		}
+
+		let newText = '';
+		// Check if we found an imports block
+		if (start !== -1 && end !== -1) {
+			// Replace the block with organized imports
+			let before = lines.slice(0, start).join("\n");
+			let after = lines.slice(end + 1).join("\n");
+			newText = `${before}\n${organizedImportString}\n${after}`;
+		}
 
 		editor.edit(editBuilder => {
 			// TODO: instead of whole file re-write, only replace imports for performance.
@@ -51,8 +78,36 @@ export function activate(context: vscode.ExtensionContext) {
 		};
 
 		const importGroups: ImportGroupsType = {};
+		const commentedImports: Set<string> = new Set();
+
+		let blockCommentStarted = false;
 		importLines.forEach(line => {
+			line = line.trim();
+
 			type PATH = string | RegExpMatchArray | null;
+
+			// Commented import should be skipped
+			let isCommented: PATH = line.match(/^((\#(.*))|(\/\/(\s+)?))use (.*);$/);
+			let isBlockCommentedStart: PATH = line.match(/^(\/\*+?\s*use\s+(.*?);)|(use\s*\*\/.*$)/);
+			let isBlockCommentedEnd: PATH = line.match(/^.*\*\/.*$/);
+
+			if (isCommented) {
+				commentedImports.add(line);
+				return;
+			}
+
+			if (isBlockCommentedStart) {
+				blockCommentStarted = true;
+			}
+
+			if (isBlockCommentedStart || blockCommentStarted) {
+				if (isBlockCommentedEnd) {
+					blockCommentStarted = false;
+				}
+				commentedImports.add(line);
+				return;
+			}
+			
 			let path: PATH = line.match(/^use (.*);$/);
 			path = path ? path[1] : '';
 			const [base, ...rest] = path.split('\\').reverse();
@@ -69,7 +124,7 @@ export function activate(context: vscode.ExtensionContext) {
 			importGroups[namespace].add(base);
 		});
 
-		return Object.entries(importGroups).map(([namespace, basesSet]) => {
+		const organizedImports = Object.entries(importGroups).map(([namespace, basesSet]) => {
 
 			let bases = Array.from(basesSet); // Convert Set to Array for sorting or further manipulation
 			// Check and split if one of the bases is already a grouped import
@@ -84,25 +139,31 @@ export function activate(context: vscode.ExtensionContext) {
 				return acc;
 			}, []);
 
-			// TODO: sort imports by length before grouping
-	
 			if (bases.length === 1) {
 				return `use ${namespace}\\${bases[0]};`;
 			} else {
-				return `use ${namespace}\\{${bases.sort().join(', ')}};`;
+				// TODO: sort if enable via extension setting.
+				const basesSorted = bases.sort((a, b) => a.length - b.length);
+				return `use ${namespace}\\{${basesSorted.join(', ')}};`;
 			}
 		});
+
+		// TODO: sort if enable via extension setting.
+		const organizedImportsSorted = organizedImports.sort((a, b) => a.length - b.length);
+		organizedImportsSorted.push(...Array.from(commentedImports));
+
+		return organizedImports;
 	}
 
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('php-short-imports.groupImports', async () => {
+	let disposable = vscode.commands.registerCommand('php-group-imports.groupImports', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		optimizeImports();
-		vscode.window.showInformationMessage('Hello World from PHP Short Imports!');
+		vscode.window.showInformationMessage('Hello World from PHP Group Imports!');
 	});
 
 	context.subscriptions.push(disposable);
