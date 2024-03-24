@@ -46,8 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 		 */
 		let start = -1, end = -1;
 		for (let i = 0; i < lines.length; i++) {
-				// if (lines[i].match(/^(\/\/(\s+)?)?use [^;]+;$/)) {
-				if (lines[i].match(/^((\/\*\*?[^*]*\*+(?:[^\/*][^*]*\*+)*\/\s*)?use [^;]+;\s*)|(\/\/\s*use [^;]+;\s*)$/g)) {
+			if (lines[i].match(/^((\#(\s+)?)|(\/(\*)+(\s+)?)?use [^;]+;\s*)|(\/\/\s*use [^;]+;\s*)$/g)) { // Working for # and //
 				if (start === -1) {start = i;}
 				end = i;
 			}
