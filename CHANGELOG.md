@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.1.3
+
+### Added
+  - Setting to sort grouped imports by alpha | length | none. default: alpha
+    - ![Sort Algorithm](images/changelog/v1.1.3-added-1.png)
+
 ## 1.1.2
 
 ### Added

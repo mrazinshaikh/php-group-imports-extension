@@ -9,10 +9,10 @@ Command Pallet > `PHP Group Imports`
 ## Known Issues
 
 - ~~[x] Namespaces duplicated when commented import statement exist.~~
-- ~~[x] having first import statement commented with `#` or `/*` will be duplicated in output.~~
+- ~~[x] having first import statement commented with `#` or `/*` will be duplicated in output.~~ see: [#4](https://github.com/mrazinshaikh/php-group-imports-extension/issues/4)
 - [ ] Performance drawback because whole file re-write is used.
-- [ ] Allow Customization via extension setting.
-    - [ ] Sort (by length) classes inside group if enabled from settings
+- [-] Allow Customization via extension setting.
+    - ~~[x] Sort classes inside group if enabled from settings (`phpGroupImports.sortAlgorithm`)~~ see: [#7](https://github.com/mrazinshaikh/php-group-imports-extension/issues/7)
     - [ ] Sort (by length) imports if enabled from settings
 
 
