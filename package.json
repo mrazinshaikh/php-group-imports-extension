@@ -2,7 +2,7 @@
   "name": "php-group-imports",
   "displayName": "PHP Group Imports",
   "description": "To merge same namespace imports to single import statement",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "publisher": "MRazinShaikh",
   "license": "MIT",
   "repository": {
@@ -24,7 +24,18 @@
         "command": "php-group-imports.groupImports",
         "title": "PHP Group Imports"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "groupImports",
+      "properties": {
+        "phpGroupImports.notifyOnComplete": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notification message on Group Import operation is completed"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",

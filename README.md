@@ -9,7 +9,7 @@ Command Pallet > `PHP Group Imports`
 ## Known Issues
 
 - ~~[x] Namespaces duplicated when commented import statement exist.~~
-- [ ] having first import statement commented with `#` or `/*` will be duplicated in output.
+- ~~[x] having first import statement commented with `#` or `/*` will be duplicated in output.~~
 - [ ] Performance drawback because whole file re-write is used.
 - [ ] Allow Customization via extension setting.
     - [ ] Sort (by length) classes inside group if enabled from settings
@@ -20,13 +20,7 @@ Command Pallet > `PHP Group Imports`
 
 Coming soon....
 
-### 0.1.0
-
-- Initial project structure
-- Initial php import grouping logic implementation
-
-### 1.0.0
-
-- Handle commented imports (single line comment with `#` or `//` and block comment with `/* */`)
+## Change Log
+ See [CHANGELOG.md](CHANGELOG.md)
 
 **Enjoy!**
