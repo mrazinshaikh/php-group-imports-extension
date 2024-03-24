@@ -8,7 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "php-group-imports" is now active!');
+	// console.log('Congratulations, your extension "php-group-imports" is now active!');
 
 	function optimizeImports() {
 		const editor = vscode.window.activeTextEditor;
@@ -141,8 +141,8 @@ export function activate(context: vscode.ExtensionContext) {
 			if (bases.length === 1) {
 				return `use ${namespace}\\${bases[0]};`;
 			} else {
-				// TODO: sort if enable via extension setting.
-				const basesSorted = bases.sort((a, b) => a.length - b.length);
+				const basesSorted = getSortedStatements(bases);
+
 				return `use ${namespace}\\{${basesSorted.join(', ')}};`;
 			}
 		});
@@ -152,6 +152,23 @@ export function activate(context: vscode.ExtensionContext) {
 		organizedImportsSorted.push(...Array.from(commentedImports));
 
 		return organizedImports;
+	}
+
+	function getSortedStatements(bases: Array<string>): Array<string> {
+		type SortAlgorithm =  'alpha' | 'length' | 'none';
+
+		const config = vscode.workspace.getConfiguration("phpGroupImports");
+		const sortAlgo = config.get('sortAlgorithm') as SortAlgorithm | undefined;
+
+		if (sortAlgo === 'alpha') {
+			return bases.sort();
+		}
+
+		if (sortAlgo === 'length') {
+			return bases.sort((a, b) => a.length - b.length);
+		}
+
+		return bases; // sortAlgo === 'none'
 	}
 
 
