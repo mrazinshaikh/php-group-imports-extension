@@ -1,16 +1,32 @@
 # Change Log
 
-All notable changes to the "php-group-imports" extension will be documented in this file.
+## 1.1.2
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+### Added
+  - Setting to enable/disable notification on group import operation complete.
+    - ![notification image](images/changelog/v1.1.2-added-1.png)
+    - ![notification setting image](images/changelog/v1.1.2-added-2.png)
 
-## 0.1.0
 
-- Initial project structure
-- Initial php import grouping logic implementation
+## 1.1.1
+
+### Fixes
+  - having first import statement commented with `#` or `/*` will be duplicated in output. [#4](https://github.com/mrazinshaikh/php-group-imports-extension/issues/4)
+
+### Added
+  - MIT license in [package.json](package.json#L7,15)
+
 
 ## 1.0.0
 
+### Changed
 - Handle commented imports (single line comment with `#` or `//` and block comment with `/* */`)
+
+
+## 0.1.0
+
+### Added
+  - Initial project structure
+  - Initial php import grouping logic implementation
 
 **Enjoy!**
