@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.1.4
+
+### Added
+  - Order imports by type. php-cs imports-order rule configurable from settings. default `null`
+    - ![Import Order by type](images/changelog/v1.1.4-added-1.png)
+
 ## 1.1.3
 
 ### Added
