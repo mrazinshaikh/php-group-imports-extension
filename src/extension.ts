@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const text = editor.document.getText();
-		const importLines = text.match(/^((\#(.*))|((\/\/(\s+)?)|((\/(\*+))(\s+)?))?use [^;]+;)?(.*\*\/.*$)?/gm);
+		const importLines = text.match(/^((\#(?!.*\[.*)(.*))|((\/\/(\s+)?)|((\/(\*+))(\s+)?))?use [^;]+;)?(.*\*\/.*$)?/gm);
 		// const importLines = text.match(/^((\/\*\*?[^*]*\*+(?:[^\/*][^*]*\*+)*\/\s*)?use [^;]+;\s*)|(\/\/\s*use [^;]+;\s*)$/gm);
 		if (!importLines) {
 			vscode.window.showInformationMessage('No imports found');
@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
 		 */
 		let start = -1, end = -1;
 		for (let i = 0; i < lines.length; i++) {
-			if (lines[i].match(/^((\#(\s+)?)|(\/(\*)+(\s+)?)?use [^;]+;\s*)|(\/\/\s*use [^;]+;\s*)$/g)) { // Working for # and //
+			if (lines[i].match(/^((\#(?!.*\[.*)(\s+)?)|(\/(\*)+(\s+)?)?use [^;]+;\s*)|(\/\/\s*use [^;]+;\s*)$/g)) { // Working for # and //
 				if (start === -1) {start = i;}
 				end = i;
 			}
@@ -85,7 +85,7 @@ export function activate(context: vscode.ExtensionContext) {
 			type PATH = string | RegExpMatchArray | null;
 
 			// Commented import should be skipped
-			let isCommented: PATH = line.match(/^((\#(.*))|(\/\/(\s+)?))use (.*);$/);
+			let isCommented: PATH = line.match(/^((\#(?!.*\[.*)(.*))|(\/\/(\s+)?))use (.*);$/);
 			let isBlockCommentedStart: PATH = line.match(/^(\/\*+?\s*use\s+(.*?);)|(use\s*\*\/.*$)/);
 			let isBlockCommentedEnd: PATH = line.match(/^.*\*\/.*$/);
 
