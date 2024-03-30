@@ -2,7 +2,7 @@
   "name": "php-group-imports",
   "displayName": "PHP Group Imports",
   "description": "To merge same namespace imports to single import statement",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "publisher": "MRazinShaikh",
   "license": "MIT",
   "repository": {
@@ -27,12 +27,21 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "groupImports",
+      "title": "phpGroupImports",
       "properties": {
         "phpGroupImports.notifyOnComplete": {
           "type": "boolean",
           "default": true,
           "description": "Show notification message on Group Import operation is completed"
+        },
+        "phpGroupImports.importsOrder": {
+          "type": [ "array", "null"],
+          "default": [],
+          "items": {
+            "type": "string",
+            "enum": ["const", "function", "class"]
+          },
+          "markdownDescription": "Defines the order of import types. See [PHP-CS Rule](https://cs.symfony.com/doc/rules/import/ordered_imports.html#imports-order)"
         },
         "phpGroupImports.sortAlgorithm": {
           "type": "string",

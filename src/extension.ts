@@ -5,7 +5,6 @@ import * as vscode from 'vscode';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	// console.log('Congratulations, your extension "php-group-imports" is now active!');
@@ -147,13 +146,15 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		});
 
-		// TODO: sort if enable via extension setting.
-		const organizedImportsSorted = organizedImports.sort((a, b) => a.length - b.length);
+		const organizedImportsSorted = getOrderedImports(organizedImports);
 		organizedImportsSorted.push(...Array.from(commentedImports));
 
-		return organizedImports;
+		return organizedImportsSorted;
 	}
 
+	/**
+	 * To get the grouped imports sorted in phpGroupImports.sortAlgorithm
+	 */
 	function getSortedStatements(bases: Array<string>): Array<string> {
 		type SortAlgorithm =  'alpha' | 'length' | 'none';
 
@@ -169,6 +170,63 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		return bases; // sortAlgo === 'none'
+	}
+
+	/**
+	 * To order listing of import statements by import types defined in phpGroupImports.importsOrder
+	 */
+	function getOrderedImports(importStatements: string[]): string[] {
+		const resolvedOrder = resolveOrderOfImport();
+
+		// Group import statements based on their type, handling class imports differently
+		const groupedImports: { [key: string]: string[] } = {};
+		importStatements.forEach((statement) => {
+		  let importType = statement.split(' ')[1]; // Extract import type
+		  if (!resolvedOrder.includes(importType)) { // If not a recognized type, consider it a class import
+			importType = "class";
+		  }
+		  groupedImports[importType] = groupedImports[importType] || [];
+		  groupedImports[importType].push(statement);
+		});
+
+		// Reorder import statements based on the specified order (unchanged from previous version)
+		const orderedImports: string[] = [];
+		resolvedOrder.forEach((type, index) => {
+		  const importsOfType = groupedImports[type];
+		  if (importsOfType) {
+			if (index !== resolvedOrder.length - 1) {
+				importsOfType[importsOfType.length - 1] = importsOfType[importsOfType.length - 1] + '\n';
+			}
+			orderedImports.push(...importsOfType);
+		  }
+		});
+
+		return orderedImports;
+	}
+
+	function resolveOrderOfImport() {
+		type OrderTypeA = "const" | "class" | "function";
+		const defaultOrder = ["const", "class", "function"];
+
+		// Read setting variable phpGroupImports.importsOrder
+		const config = vscode.workspace.getConfiguration("phpGroupImports");
+		const importsOrderSetting = config.get('importsOrder') as Array<OrderTypeA> | null | undefined;
+
+		if (importsOrderSetting && Array.isArray(importsOrderSetting) && importsOrderSetting.length > 0) {
+			// Remove duplicates from user-defined order
+			const filteredOrder = [...new Set(importsOrderSetting)];
+
+			// In case if user set the array order but miss any value then check and complete the array.
+			// Find missing values using filter
+			const missingValues = defaultOrder.filter(
+				(value) => !filteredOrder.includes(value as OrderTypeA)
+			);
+		
+			// Add missing values to the end of the user-defined order
+			return [...filteredOrder, ...missingValues];
+		}
+
+		return defaultOrder;
 	}
 
 
