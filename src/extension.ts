@@ -67,6 +67,12 @@ export function activate(context: vscode.ExtensionContext) {
 				editor.document.positionAt(text.length)
 			);
 			editBuilder.replace(entireRange, newText);
+		}).then(() => {
+			const activeTextEditor = vscode.window.activeTextEditor;
+			if (activeTextEditor && activeTextEditor.document.uri.scheme !== 'untitled') {
+				// Save the document
+				activeTextEditor.document.save();
+			}
 		});
 	}
 	
