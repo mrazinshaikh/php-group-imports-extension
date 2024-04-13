@@ -2,7 +2,7 @@
 
 Command Pallet > `PHP Group Imports`
 - ![sample-input](images/changelog/sample-input.png)
-- ![sample-input](images/changelog/sample-output.png)
+- ![sample-output](images/changelog/sample-output.png)
 
 ## Requirements
 
