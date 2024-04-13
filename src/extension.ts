@@ -67,6 +67,12 @@ export function activate(context: vscode.ExtensionContext) {
 				editor.document.positionAt(text.length)
 			);
 			editBuilder.replace(entireRange, newText);
+		}).then(() => {
+			const activeTextEditor = vscode.window.activeTextEditor;
+			if (activeTextEditor && activeTextEditor.document.uri.scheme !== 'untitled') {
+				// Save the document
+				activeTextEditor.document.save();
+			}
 		});
 	}
 	
@@ -191,9 +197,19 @@ export function activate(context: vscode.ExtensionContext) {
 
 		// Reorder import statements based on the specified order (unchanged from previous version)
 		const orderedImports: string[] = [];
+
+		const config = vscode.workspace.getConfiguration("phpGroupImports");
+		const orderStatementsAscending = config.get('importStatementOrder') as boolean | undefined;
+
 		resolvedOrder.forEach((type, index) => {
-		  const importsOfType = groupedImports[type];
+		  let importsOfType = groupedImports[type];
 		  if (importsOfType) {
+			importsOfType = importsOfType.sort((a, b) => {
+				if (orderStatementsAscending) {
+					return a.length - b.length;
+				}
+				return b.length - a.length;
+			});
 			if (index !== resolvedOrder.length - 1) {
 				importsOfType[importsOfType.length - 1] = importsOfType[importsOfType.length - 1] + '\n';
 			}
