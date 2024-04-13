@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.1.5
+
+### Added
+  - Order (sort) imports statements in ascending or descending order.
+    - ![Import Statements Order](images/changelog/v1.1.5-added-1.png)
+  - Trigger Save window on operation complete.
+
+### Fixes
+  - Extension title in settings fixed.
+    - ![extension-title-fix-in-settings](images/changelog/v1.1.5-fixed-1.png)
+
 ## 1.1.4
 
 ### Added
