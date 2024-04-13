@@ -1,6 +1,8 @@
 # PHP Group imports
 
 Command Pallet > `PHP Group Imports`
+- ![sample-input](images/changelog/sample-input.png)
+- ![sample-input](images/changelog/sample-output.png)
 
 ## Requirements
 

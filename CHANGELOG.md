@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.1.6
+
+### Added
+  - Sample input and output screenshot added.
+
 ## 1.1.5
 
 ### Added
