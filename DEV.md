@@ -14,3 +14,5 @@ npm install -g @vscode/vsce
 - [package.json](package.json) - update the package version.
 
 - [CHANGELOG.md](CHANGELOG.md) - Log new version details.
+
+## Maintain version vsix file in builds folder.
