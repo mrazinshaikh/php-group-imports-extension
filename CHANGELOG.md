@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.1.7
+
+### Changed
+  - Fix extra new line at the end of import statements.
+
 ## 1.1.6
 
 ### Added

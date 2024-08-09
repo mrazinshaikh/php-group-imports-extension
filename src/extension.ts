@@ -211,7 +211,7 @@ export function activate(context: vscode.ExtensionContext) {
 				return b.length - a.length;
 			});
 			if (index !== resolvedOrder.length - 1) {
-				importsOfType[importsOfType.length - 1] = importsOfType[importsOfType.length - 1] + '\n';
+				importsOfType[importsOfType.length - 1] = importsOfType[importsOfType.length - 1];// + '\n';
 			}
 			orderedImports.push(...importsOfType);
 		  }
