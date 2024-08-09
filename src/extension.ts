@@ -31,6 +31,14 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const organizedImports = organizeImports(importLines.filter(n => n));
+		if (organizedImports.length === 0) {
+			/**
+			 * This is in case of block comments found in the document above importLines will have
+			 * some items like /* or *\/.
+			 */
+			vscode.window.showInformationMessage('No imports found');
+			return;
+		}
 		const organizedImportString = organizedImports.join("\n");
 
 		// Split text into lines
@@ -128,7 +136,7 @@ export function activate(context: vscode.ExtensionContext) {
 			importGroups[namespace].add(base);
 		});
 
-		const organizedImports = Object.entries(importGroups).map(([namespace, basesSet]) => {
+		const organizedImports = Object.entries(importGroups).flatMap(([namespace, basesSet]) => {
 
 			let bases = Array.from(basesSet); // Convert Set to Array for sorting or further manipulation
 			// Check and split if one of the bases is already a grouped import
@@ -143,7 +151,53 @@ export function activate(context: vscode.ExtensionContext) {
 				return acc;
 			}, []);
 
-			if (bases.length === 1) {
+
+			if (!namespace){
+				/**
+				 * If namespace is undefined or an empty string. this are the php internal imports like DateTime or Closure etc.
+				 * 
+				 * @example
+				 * ```diff
+				 * <?php
+				 * -use const PHP_BINARY;
+				 * -use const PHP_EOL;
+				 * -use Closure;
+				 * -use DateTime;
+				 * -use function array_fill;
+				 * -use function array_sum;
+				 * 
+				 * +use Closure, DateTime;
+				 * +use const PHP_BINARY, PHP_EOL;
+				 * +use function array_fill, array_sum;
+				 * ```
+				 */
+
+				type Grouped = {
+					default: string[];
+					const: string[];
+					function: string[];
+				};
+				
+				let grouped = bases.reduce<Grouped>(
+					(acc, item) => {
+						if (item.startsWith("const")) {
+							acc.const.push(item.replace('const ', ''));
+						} else if (item.startsWith("function")) {
+							acc.function.push(item.replace("function ", ""));
+						} else {
+							acc.default.push(item);
+						}
+						return acc;
+					},
+					{ default: [], const: [], function: [] }
+				);
+				
+				return [
+					...(grouped.default.length > 0 ? [`use ${getSortedStatements(grouped.default).join(", ")};`] : []),
+					...(grouped.const.length > 0 ? [`use const ${getSortedStatements(grouped.const).join(", ")};`] : []),
+					...(grouped.function.length > 0 ? [`use function ${getSortedStatements(grouped.function).join(", ")};`] : []),
+				];
+			} else if (bases.length === 1) {
 				return `use ${namespace}\\${bases[0]};`;
 			} else {
 				const basesSorted = getSortedStatements(bases);
@@ -153,7 +207,11 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 
 		const organizedImportsSorted = getOrderedImports(organizedImports);
-		organizedImportsSorted.push(...Array.from(commentedImports));
+		const lastImport = organizedImportsSorted[organizedImportsSorted.length - 1];
+		if (lastImport) {
+			organizedImportsSorted[organizedImportsSorted.length - 1] = lastImport.endsWith('\n') ? lastImport.slice(0, -1) : lastImport;
+			organizedImportsSorted.push(...Array.from(commentedImports));
+		}
 
 		return organizedImportsSorted;
 	}
@@ -211,7 +269,7 @@ export function activate(context: vscode.ExtensionContext) {
 				return b.length - a.length;
 			});
 			if (index !== resolvedOrder.length - 1) {
-				importsOfType[importsOfType.length - 1] = importsOfType[importsOfType.length - 1];// + '\n';
+				importsOfType[importsOfType.length - 1] = importsOfType[importsOfType.length - 1] + '\n';
 			}
 			orderedImports.push(...importsOfType);
 		  }

@@ -1,8 +1,15 @@
 # Change Log
 
+## 1.1.8
+
+### Fixes
+  - Blank line between import statement type (class, const, function) lost (on [v1.1.7](https://github.com/mrazinshaikh/php-group-imports-extension/releases/tag/v1.1.7)) issue fixed.
+  - PHP internal imports group issue fixed.
+    - ![PHP internal imports](images/changelog/v1.1.8-fixed-1.jpg)
+
 ## 1.1.7
 
-### Changed
+### Fixes
   - Fix extra new line at the end of import statements.
 
 ## 1.1.6
