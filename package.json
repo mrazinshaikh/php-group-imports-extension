@@ -29,7 +29,7 @@
       "explorer/context": [
         {
           "command": "php-group-imports.groupImports",
-          "when": "explorerResourceIsFolder || resourceExtname == .php",
+          "when": "resourceExtname == .php",
           "group": "z_commands"
         }
       ]
