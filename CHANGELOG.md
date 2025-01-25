@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.1.9
+
+### Added
+  - Added "PHP Group Imports action in explorer context menu."
+    - ![Action from context menu image](images/changelog/v1.1.9-added-1.png)
+
 ## 1.1.8
 
 ### Fixes

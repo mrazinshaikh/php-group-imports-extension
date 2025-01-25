@@ -2,7 +2,7 @@
   "name": "php-group-imports",
   "displayName": "PHP Group Imports",
   "description": "To merge same namespace imports to single import statement",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "publisher": "MRazinShaikh",
   "license": "MIT",
   "repository": {
@@ -25,6 +25,15 @@
         "title": "PHP Group Imports"
       }
     ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "php-group-imports.groupImports",
+          "when": "resourceExtname == .php",
+          "group": "z_commands"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "PHP Group Imports",
