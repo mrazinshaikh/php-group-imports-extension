@@ -25,6 +25,15 @@
         "title": "PHP Group Imports"
       }
     ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "php-group-imports.groupImports",
+          "when": "explorerResourceIsFolder || resourceExtname == .php",
+          "group": "z_commands"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "PHP Group Imports",
