@@ -1,5 +1,14 @@
 # PHP Group imports
 
+## Installation
+- Launch VS Code Quick Open (Ctrl+P), paste the following command, and press enter
+```sh
+ext install MRazinShaikh.php-group-imports
+```
+- Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=MRazinShaikh.php-group-imports
+
+## Usage
+
 Command Pallet > `PHP Group Imports`
 - ![sample-input](images/changelog/sample-input.png)
 - ![sample-output](images/changelog/sample-output.png)
